@@ -1,0 +1,63 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component: monkey
+    kube-monkey/enabled: enabled
+    kube-monkey/identifier: monkey-man
+    kube-monkey/kill-mode: fixed
+    kube-monkey/kill-value: "3"
+    kube-monkey/mtbf: "7"
+  name: monkey-man
+  namespace: monkey
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      component: monkey
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        component: monkey
+        kube-monkey/enabled: enabled
+        kube-monkey/identifier: monkey-man
+        kube-monkey/kill-mode: fixed
+        kube-monkey/kill-value: "3"
+        kube-monkey/mtbf: "7"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - jedha-admin-1
+      containers:
+      - image: vip-intOAM:5001/nginx:latest
+        imagePullPolicy: Always
+        name: nginx
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        volumeMounts:
+          - name: html-data
+            mountPath: /var/www/html
+          - name: conf-data
+            mountPath: /etc/nginx/conf.d
+      volumes:
+        - name: html-data
+          hostPath:
+            path: /root/technothon/nginx/html
+        - name: conf-data
+          hostPath:
+            path: /root/technothon/nginx/conf
+
