@@ -79,8 +79,8 @@ spec:
       volumes:
         - name: html-data
           hostPath:
-            path: /root/technothon/nginx/html
+            path: ./nginx/html
         - name: conf-data
           hostPath:
-            path: /root/technothon/nginx/conf
+            path: ./nginx/conf
 ...
