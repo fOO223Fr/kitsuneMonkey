@@ -1,0 +1,148 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    app: cadvisor
+  name: cadvisor
+  namespace: cadvisor
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: cadvisor
+      name: cadvisor
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+      creationTimestamp: null
+      labels:
+        app: cadvisor
+        name: cadvisor
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - args:
+        - --housekeeping_interval=10s
+        - --max_housekeeping_interval=15s
+        - --event_storage_event_limit=default=0
+        - --event_storage_age_limit=default=0
+        - --disable_metrics=percpu,disk,network,tcp,udp
+        - --docker_only
+        env:
+        - name: LD_LIBRARY_PATH
+          value: /bin/nvidia/lib64/
+        image: vip-intOAM:5001/cadvisor:v0.30.2
+        imagePullPolicy: IfNotPresent
+        name: cadvisor
+        ports:
+        - containerPort: 8080
+          hostPort: 9091
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 300m
+          requests:
+            cpu: 150m
+            memory: 200Mi
+        securityContext:
+          privileged: true
+          procMount: Default
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /dev
+          name: dev
+        - mountPath: /bin/nvidia/lib64/
+          name: libnvidia
+        - mountPath: /rootfs
+          name: rootfs
+          readOnly: true
+        - mountPath: /var/run
+          name: var-run
+          readOnly: true
+        - mountPath: /sys
+          name: sys
+          readOnly: true
+        - mountPath: /var/lib/docker
+          name: docker
+          readOnly: true
+        - mountPath: /dev/disk
+          name: disk
+          readOnly: true
+      - command:
+        - /monitor
+        - --stackdriver-prefix=custom.googleapis.com
+        - --source=cadvisor:http://localhost:8080
+        - --pod-id=$(POD_NAME)
+        - --namespace-id=$(POD_NAMESPACE)
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        image: vip-intOAM:5001/prometheus-to-sd:v0.2.6
+        imagePullPolicy: IfNotPresent
+        name: prometheus-to-sd
+        ports:
+        - containerPort: 6061
+          name: profiler
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          procMount: Default
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      priorityClassName: system-node-critical
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /dev
+          type: ""
+        name: dev
+      - hostPath:
+          path: /home/kubernetes/bin/nvidia/lib64/
+          type: ""
+        name: libnvidia
+      - hostPath:
+          path: /
+          type: ""
+        name: rootfs
+      - hostPath:
+          path: /var/run
+          type: ""
+        name: var-run
+      - hostPath:
+          path: /sys
+          type: ""
+        name: sys
+      - hostPath:
+          path: /var/lib/docker
+          type: ""
+        name: docker
+      - hostPath:
+          path: /dev/disk
+          type: ""
+        name: disk
+  templateGeneration: 3
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
