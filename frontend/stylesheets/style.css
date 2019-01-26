@@ -1,0 +1,171 @@
+body {
+    font-size: 14px;
+    font-family: "Helvetica Neue",sans-serif;
+    background: #1D1F21;
+}
+a:link, a:visited, a:hover, a:active {
+    color: #337ab7;
+    text-decoration: none;
+}
+pre {font-size:0.8em;}
+
+
+header {
+    width: 100%;
+    background: #1D1F21;
+    height: 70px;
+}
+
+
+ .logo {
+  border: 0px;
+  background: url('logo.png') no-repeat;
+  background-size: 170px 70px;
+  width: 170px;
+  height: 70px;
+  display: block;
+  margin-left: 30px;
+  margin-top: 15px;
+  float: left;
+}
+
+
+.wrapper {
+    min-height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-sidebar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #222d32;
+    padding-top: 50px;
+    min-height: 100%;
+    width: 180px;
+    z-index: 810;
+}
+
+.content-wrapper {
+    min-height: 100%;
+    padding: 2rem;
+    z-index: 800;
+}
+
+.user-info, .user-info a  {
+    color: #000;
+}
+.user-info a    {
+    text-decoration: underline;
+}
+
+.node-container {
+    padding-bottom: 25px;
+}
+
+.node {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100%;
+    overflow: auto;
+    top: 70px;
+    background: white;
+    overflow: hidden;
+}
+
+
+.info-container {
+   color: white;
+   position: fixed;
+   top: 20%;
+   left: 10%;
+}
+
+form {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+}
+.info {
+    clear: both;
+}
+.info > span {
+    width: 100px;
+    height: 100px;
+    display: block;
+    font-size: 28px;
+    text-align: center;
+    line-height: 21px;
+    border: 1px solid white;
+    border-radius: 50%;
+    float: left;
+    padding-top: 30px;
+    margin-right: 25px;
+}
+
+.info > span > span {
+    font-size: 12px;
+    width: 100%;
+    float: left;
+}
+
+.info > .name {
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: #ff007f;
+    letter-spacing: 4px;
+    margin-bottom: 25px;
+}
+
+.ordered-pod-list {
+    margin-top: 25px;
+    margin-left: -15px;
+    float: left;
+    clear:both;
+    height: 600px;
+    overflow: auto;
+}
+
+.ordered-pod-list li {
+    margin-top: 15px;
+    padding-left: 15px;
+}
+
+.ordered-pod-list li .name {
+    cursor: pointer;
+}
+
+.details {
+    display: none;
+}
+
+.opened .details {
+    display: block;
+    margin-top: 15px;
+}
+
+form {
+    margin-top: 15px;
+}
+
+
+.waiting {
+    color: #F54E23;
+    text-transform: capitalize;
+}
+
+.running {
+    color: #EB0475;
+    text-transform: capitalize;
+}
+
+.terminated {
+    color: #01BCEB;
+    text-transform: capitalize;
+}
+

@@ -1,0 +1,81 @@
+
+@mixin distribute-on-circle(
+  $nb-items,
+  $circle-size,
+  $item-size,
+  $class-for-IE: false
+) {
+
+  $half-item: ($item-size / 2);
+  $half-parent: ($circle-size / 2);
+
+  position: relative; /* 1 */
+  width:  $circle-size;
+  height: $circle-size;
+  padding: 0;
+  border-radius: 50%;
+
+  > * { /* 4 */
+    display: block;
+    position: absolute;
+    top:  50%;
+    left: 50%;
+    border-radius: 50%;
+    width:  $item-size;
+    height: $item-size;
+    margin: -$half-item;
+    background: #EB0475;
+  }
+
+  $angle: (360 / $nb-items);
+  $rot: 0;
+  @for $i from 1 through $nb-items {
+    @if not $class-for-IE {
+      > :nth-of-type(#{$i}) {
+        transform: rotate($rot * 1deg) translate($half-parent) rotate($rot * -1deg);
+        &.waiting {
+         background: #F54E23;
+         animation: pulseMycircle 5s infinite;
+        }
+        @keyframes pulseMycircle {
+           0% {opacity: 0.2;}
+           30% {opacity: 0.6;}
+           50% {opacity: 1;}
+           80% {opacity: 0.6}
+           100% {opacity: 0.2;}
+        }
+
+        &.terminated {
+         background: #01BCEB;
+         animation: terminateMycircle 10s;
+         animation-fill-mode: forwards;
+         -webkit-animation-fill-mode: forwards; /* Safari 4.0 - 8.0 */
+        }
+        @keyframes terminateMycircle {
+           0% {opacity: 1;}
+           100% {opacity: 0;}
+        }
+
+      }
+    } @else {
+      > .#{$class-for-IE}#{$i} {
+        // If CSS transforms are not supported
+        $mt: sin($rot * pi() / 180) * $half-parent - $half-item;
+        $ml: cos($rot * pi() / 180) * $half-parent - $half-item;
+        margin: $mt 0 0 $ml;
+      }
+    }
+
+    $rot: ($rot + $angle);
+  }
+}
+
+.circle-container {
+  margin-left: 50%;
+  margin-top: 10%;
+}
+@for $i from 1 through 20 {
+  .circle-container-#{$i} {
+    @include distribute-on-circle($i, 420px, 40px, false);
+  }
+}
